@@ -34,7 +34,8 @@ fn main() {
             println!("Part 1: {}", result);
         },
         2 => {
-            part2(&mut input);
+            let result = part2(&mut input);
+            println!("Part 2: {}", result);
         },
         _ => {
             panic!("Invalid part number: {}", part);
@@ -73,6 +74,35 @@ fn part1(input: &mut BufReader<File>) -> i32 {
     return horiz * depth;
 }
 
-fn part2(input: &mut BufReader<File>) {
+fn part2(input: &mut BufReader<File>) -> i32 {
+    let mut horiz = 0;
+    let mut depth = 0;
+    let mut aim   = 0;
 
+    for line in input.lines() {
+        let command = line.unwrap();
+        let components: Vec<&str> = command.split(' ').collect();
+        assert_eq!(components.len(), 2);
+
+        let motion = components[0];
+        let value = components[1].parse::<i32>().unwrap();
+
+        match motion {
+            "forward" => {
+                horiz += value;
+                depth += aim * value;
+            },
+            "up" => {
+                aim -= value;
+            },
+            "down" => {
+                aim += value;
+            },
+            _ => {
+                panic!("Invalid command: {}", motion)
+            },
+        }
+    }
+
+    return horiz * depth;
 }
