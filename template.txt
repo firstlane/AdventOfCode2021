@@ -1,0 +1,100 @@
+use std::fs::File;
+use std::path::Path;
+use std::io::{BufReader, BufRead, Error};
+use std::env;
+use std::result::Result;
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+    let mut file_path = String::new();
+    let mut part = 1;
+
+    match args.len() {
+        3 => {
+            // Assume first argument is part number,
+            // and second is input file.
+            part = args[1].parse::<i32>().unwrap();
+            file_path = args[2].clone();
+        },
+        _ => {
+            panic!("Invalid arguments");
+        },
+    }
+
+    let file = match File::open(file_path) {
+        Err(why) => panic!("couldn't open input file: {}", why),
+        Ok(file) => file,
+    };
+
+    let mut input = BufReader::new(file);
+
+    match part {
+        1 => {
+            let result = part1(&mut input);
+            println!("Part 1: {}", result);
+        },
+        2 => {
+            let result = part2(&mut input);
+            println!("Part 2: {}", result);
+        },
+        _ => {
+            panic!("Invalid part number: {}", part);
+        },
+    }
+}
+
+fn parse_input(input: &mut BufReader<File>) -> (Vec::<i32>, Vec::<BingoBoard>) {
+    let bingo_numbers_str = input.lines().nth(0).unwrap().unwrap();
+
+    let bingo_numbers_str = bingo_numbers_str.split(',');
+    let mut bingo_numbers = Vec::<i32>::new();
+    for number in bingo_numbers_str {
+        bingo_numbers.push(number.parse::<i32>().unwrap());
+    }
+
+    let mut bingo_boards = Vec::<BingoBoard>::new();
+    let mut bingo_board = BingoBoard::new();
+    let mut row = 0;
+    for line in input.lines() {
+        let line = line.unwrap();
+        if line.is_empty() {
+            if row > 0 {
+                bingo_boards.push(bingo_board);
+                bingo_board = BingoBoard::new();
+            }
+
+            row = 0;
+            continue;
+        }
+
+        let row_data = line.split(' ');
+        let mut column = 0;
+        for c in row_data {
+            let num = c.trim();
+            if num.len() > 0 {
+                let num = num.parse::<i32>().unwrap();
+                bingo_board.numbers[row][column] = num;
+                column += 1;
+            }
+        }
+
+        row += 1;
+    }
+
+    if !bingo_board.empty() {
+        bingo_boards.push(bingo_board);
+    }
+
+    print_boards(&bingo_boards);
+
+    return (bingo_numbers, bingo_boards);
+}
+
+fn part1(input: &mut BufReader<File>) -> i32 {
+    return 0;
+}
+
+fn part2(input: &mut BufReader<File>) -> i32 {
+    return 0;
+}
+
